@@ -1,5 +1,6 @@
 {
   "id": "token-image-swap",
+  "type": "module",
   "title": "Token Image Swap (simple)",
   "description": "Botão na HUD do token que abre uma lista de imagens vinculadas ao ator para trocar a arte rapidamente.",
   "version": "1.0.0",
@@ -8,7 +9,7 @@
   "compatibility": { "minimum": "10", "verified": "12" },
   "esmodules": ["imageswap.js"],
   "styles": ["styles.css"],
-  "url": "https://github.com/SilverGlad/token-image-swap",
+  "url": "https://github.com/SilverGlad/token-image-swap-1.0.0",
   "manifest": "https://raw.githubusercontent.com/SilverGlad/token-image-swap-1.0.0/main/module.json",
   "download": "https://github.com/SilverGlad/token-image-swap-1.0.0/archive/refs/heads/main.zip"
 }
