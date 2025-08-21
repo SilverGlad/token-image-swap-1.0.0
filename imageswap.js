@@ -1,12 +1,25 @@
-// Token Image Swap (simple) — v1.0.1 (Dialog-based)
+// Token Image Swap (simple) — v1.0.2 (Dialog-based, compat escapeHTML)
 // SilverGlad & ChatGPT
 const MODULE_ID = "token-image-swap";
 const fu = foundry.utils;
 const FLAG_SCOPE = MODULE_ID;
 const FLAG_KEY = "images";
 
+// Local HTML escape (compat v10/11/12)
+function esc(s) {
+  s = String(s ?? "");
+  return s.replace(/[&<>"'`]/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "`": "&#96;"
+  })[ch]);
+}
+
 Hooks.once("init", () => {
-  console.log(`${MODULE_ID} | init v1.0.1`);
+  console.log(`${MODULE_ID} | init v1.0.2`);
 
   game.settings.register(MODULE_ID, "defaultUpdatePortrait", {
     name: "Atualizar retrato da ficha por padrão",
@@ -40,15 +53,15 @@ Hooks.on("renderTokenHUD", (app, html) => {
   const token = app.object;
   const actor = token?.actor;
   if (!actor) return;
-  if (html.find(`.${MODULE_ID}-btn`).length) return;
+  if (html.find?.(`.${MODULE_ID}-btn`)?.length) return;
 
   const btn = document.createElement("div");
   btn.classList.add("control-icon", `${MODULE_ID}-btn`);
   btn.title = "Token Image Swap";
   btn.innerHTML = `<i class="fas fa-images"></i>`;
 
-  const root = html?.[0] ?? html?.element?.[0] ?? html?.element?.get?.(0);
-  const col = root?.querySelector(".col.left") || root?.querySelector(".col.right");
+  const root = html?.[0] ?? html?.element?.[0] ?? html?.element?.get?.(0) ?? html;
+  const col = root?.querySelector?.(".col.left") || root?.querySelector?.(".col.right");
   if (!col) return;
   col.appendChild(btn);
 
@@ -114,8 +127,8 @@ async function openDialog(actor, tokenDoc) {
   const buildList = () => {
     if (!state.images.length) return `<p class="empty">Nenhuma imagem adicionada ainda.</p>`;
     return state.images.map(img => `
-      <div class="img-item" data-img="${fu.escapeHTML(img)}">
-        <img src="${fu.escapeHTML(img)}" title="${fu.escapeHTML(img)}"/>
+      <div class="img-item" data-img="${esc(img)}">
+        <img src="${esc(img)}" title="${esc(img)}"/>
         <div class="row">
           <button type="button" class="apply"><i class="fas fa-check"></i> Usar</button>
           <button type="button" class="remove" title="Remover"><i class="fas fa-trash"></i></button>
@@ -126,7 +139,7 @@ async function openDialog(actor, tokenDoc) {
 
   const content = `
     <div class="${MODULE_ID}-content image-swap-dialog">
-      <div class="header"><b>${fu.escapeHTML(actor.name)}</b></div>
+      <div class="header"><b>${esc(actor.name)}</b></div>
       <div class="options">
         <label><input type="checkbox" name="updatePortrait" ${state.updatePortrait ? "checked" : ""}/> Atualizar retrato da ficha</label>
         <label><input type="checkbox" name="updatePrototype" ${state.updatePrototype ? "checked" : ""}/> Salvar no prototype</label>
@@ -134,7 +147,7 @@ async function openDialog(actor, tokenDoc) {
       <div class="list">${buildList()}</div>
       <div class="actions">
         <button type="button" data-action="add"><i class="fas fa-plus"></i> Adicionar</button>
-        <button type="button" data-action="cycle"><i class="fas fa-sync-alt"></i> Alternar</button>
+        <button type="button" data-action="cycle"><i class="fas a-sync-alt"></i> Alternar</button>
       </div>
       <p class="hint">Dica: Shift+Clique no botão da HUD adiciona a <i>imagem atual</i> à lista.</p>
     </div>
